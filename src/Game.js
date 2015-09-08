@@ -8,8 +8,9 @@ function preload() {
     // this.game.load.baseURL = 'http://examples.phaser.io/assets/';
     // this.game.load.crossOrigin = 'anonymous';
 
-    this.game.load.image('player', 'img/ball.png');
-    this.game.load.image('platform', 'img/hole.png');
+    this.game.load.spritesheet('zombie', 'img/zombie_sheet.png', 46, 49)
+    
+    this.game.load.image('platform', 'img/ball.png');
 
 }
 
@@ -19,7 +20,7 @@ var cursors;
 var jumpButton;
 var westZombies;
 var eastZombies;
-var zombieVelocity = 60;
+var zombieBaseVelocity = 60;
 var score = 0;
 var scoreString = '';
 var scoreText;
@@ -54,8 +55,13 @@ var timeEating=-1;
 function update () {
     if (this.game.time.now > newZombieTime && eastZombies.length + westZombies.length < 8)
     {
-    	var westZombie = westZombies.create(50, this.game.height/2, 'player');
-	    var eastZombie = eastZombies.create(this.game.width - 50, this.game.height/2, 'player');
+    	var westZombie = westZombies.create(50, this.game.height/2, 'zombie');
+        westZombie.animations.add('walk-right', [5,11,17]);
+        westZombie.play('walk-right', 7, true);
+	   
+        var eastZombie = eastZombies.create(this.game.width - 50, this.game.height/2, 'zombie');
+        eastZombie.animations.add('walk-left', [4,10,16]);
+        eastZombie.play('walk-left', 7, true);
 
         eastZombie.events.onOutOfBounds.add(zombieOut, this);
         westZombie.events.onOutOfBounds.add(zombieOut, this);
@@ -64,8 +70,8 @@ function update () {
 
     }
 
-	westZombies.setAll('body.velocity.x', zombieVelocity);
-    eastZombies.setAll('body.velocity.x', -zombieVelocity);	    
+	westZombies.setAll('body.velocity.x', zombieBaseVelocity);
+    eastZombies.setAll('body.velocity.x', -zombieBaseVelocity);	    
 
     westZombies.setAll('outOfBoundsKill', true);
     westZombies.setAll('checkWorldBounds', true);
@@ -76,6 +82,8 @@ function update () {
      
     
     this.game.physics.arcade.collide(eastZombies, brain, function(){
+        eastZombie.animations.add('eatenBrain', [3,9]);
+        eastZombie.play('eatenBrain', 9, true);
     	//change this logic for one where brain has live points
     	if (timeEating == -1) { timeEating = game.time.now };
     	if (game.time.now > timeEating + 3000) {
@@ -89,14 +97,14 @@ function update () {
     
     if (cursors.left.isDown)
     {
-        westZombies.setAll('body.velocity.x',-(zombieVelocity-35));
-        // eastZombies.setAll('body.velocity.x',-(zombieVelocity-35));
+        westZombies.setAll('body.velocity.x',-(zombieBaseVelocity-35));
+        // eastZombies.setAll('body.velocity.x',-(zombieBaseVelocity-35));
     }
 
     if (cursors.right.isDown)
     {
-        // westZombies.setAll('body.velocity.x', zombieVelocity);
-        eastZombies.setAll('body.velocity.x', zombieVelocity-35);
+        // westZombies.setAll('body.velocity.x', zombieBaseVelocity);
+        eastZombies.setAll('body.velocity.x', zombieBaseVelocity-35);
     }
 }
 

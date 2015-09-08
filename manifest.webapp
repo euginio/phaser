@@ -1,6 +1,6 @@
 {
     "version": "1.1",
-    "name": "Cyber Orb",
+    "name": "Soapy Zombies",
     "description": "Description!",
     "launch_path": "/index.html",
     "appcache_path": "/offline.appcache",
@@ -17,8 +17,8 @@
         "256": "/icons/icon256.png"
     },
     "developer": {
-        "name": "Enclave Games",
-        "url": "http://enclavegames.com"
+        "name": "Eugenio Arosteguy",
+        
     },
     "installs_allowed_from": ["*"],
     "default_locale": "en",
