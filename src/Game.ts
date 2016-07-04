@@ -1,4 +1,4 @@
-/// <reference path="phaser.d.ts" />;
+/// <reference path="phaser.comments.d.ts" />;
 
 var game = new Phaser.Game(600, 300, Phaser.CANVAS, 'game', 
 				{ preload: preload, create: create, update: update });
@@ -12,7 +12,7 @@ function preload() {
 
     this.game.load.spritesheet('zombie', 'img/zombie_sheet.png', 46, 49)
     
-    this.game.load.image('brain', 'img/ball.png');
+    this.game.load.spritesheet('brain', 'img/brain.png', 81, 61);
 
 }
 
@@ -28,12 +28,11 @@ var scoreString = '';
 var scoreText;
 
 function create() {  
-<<<<<<< HEAD:src/Game.js
-    brain = game.add.sprite(this.game.width/2, this.game.height - 50, 'platform');
-=======
     brain = game.add.sprite(this.game.width/2, this.game.height/2, 'brain');
->>>>>>> origin/master:src/Game.ts
     this.game.physics.arcade.enable(brain);
+
+    brain.animations.add('aeten');
+
     brain.body.immovable = true;
     
     westZombies = game.add.group();
@@ -91,6 +90,7 @@ function update () {
     this.game.physics.arcade.collide(eastZombies, brain, function(brain, zombie){
         zombie.animations.stop('walk-left');
         zombie.animations.play('eatenBrain');
+        brain.play('aeten', 7, true);
 
     	//change this logic for one where brain has live points
     	if (timeEating == -1) { timeEating = game.time.now };
