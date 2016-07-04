@@ -26,7 +26,7 @@ var scoreString = '';
 var scoreText;
 
 function create() {  
-    brain = game.add.sprite(this.game.width/2, this.game.height/2, 'platform');
+    brain = game.add.sprite(this.game.width/2, this.game.height - 50, 'platform');
     this.game.physics.arcade.enable(brain);
     brain.body.immovable = true;
     
