@@ -6,13 +6,15 @@ function preload() {
     // this.game.load.crossOrigin = 'anonymous';
     this.game.load.spritesheet('zombie', 'img/zombie_sheet.png', 46, 49);
     this.game.load.spritesheet('brain', 'img/brain.png', 81, 61);
+    this.game.load.image('soapBubble', 'img/soap-bubbles.jpg', 25, 25);
 }
 var brain;
+var soapBubbles;
 var cursors;
 var jumpButton;
 var westZombies;
 var eastZombies;
-var zombieBaseVelocity = 120;
+var zombieBaseVelocity = 50;
 var score = 0;
 var scoreString = '';
 var scoreText;
@@ -21,10 +23,16 @@ function create() {
     this.game.physics.arcade.enable(brain);
     brain.animations.add('aeten');
     brain.body.immovable = true;
+    soapBubbles = game.add.group();
+    soapBubbles.enableBody = true;
     westZombies = game.add.group();
     westZombies.enableBody = true;
     eastZombies = game.add.group();
     eastZombies.enableBody = true;
+    westZombies.setAll('outOfBoundsKill', true);
+    westZombies.setAll('checkWorldBounds', true);
+    eastZombies.setAll('outOfBoundsKill', true);
+    eastZombies.setAll('checkWorldBounds', true);
     //  The score
     scoreString = 'Score : ';
     scoreText = game.add.text(10, 10, scoreString + score, { font: '34px Arial', fill: '#fff' });
@@ -52,10 +60,6 @@ function update() {
     }
     westZombies.setAll('body.velocity.x', zombieBaseVelocity);
     eastZombies.setAll('body.velocity.x', -zombieBaseVelocity);
-    westZombies.setAll('outOfBoundsKill', true);
-    westZombies.setAll('checkWorldBounds', true);
-    eastZombies.setAll('outOfBoundsKill', true);
-    eastZombies.setAll('checkWorldBounds', true);
     this.game.physics.arcade.collide(eastZombies, brain, function (brain, zombie) {
         zombie.animations.stop('walk-left');
         zombie.animations.play('eatenBrain');
@@ -78,6 +82,13 @@ function update() {
         // westZombies.setAll('body.velocity.x', zombieBaseVelocity);
         eastZombies.setAll('body.velocity.x', zombieBaseVelocity - 35);
     }
+    if (game.input.activePointer.isDown) {
+        soapFloor();
+    }
+}
+function soapFloor() {
+    var newSoap = soapBubbles.create(game.input.x, game.input.y, 'soapBubble');
+    newSoap.width = newSoap.height = 25;
 }
 function render() {
 }
