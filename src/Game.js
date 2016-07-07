@@ -85,6 +85,15 @@ function update() {
     if (game.input.activePointer.isDown) {
         soapFloor();
     }
+    gyro.frequency = 10;
+    // start gyroscope detection
+    gyro.startTracking(function (o) {
+        // updating player velocity
+        //player.body.velocity.x += o.gamma/20;
+        westZombies.setAll('body.velocity.x', o.gamma);
+        eastZombies.setAll('body.velocity.x', o.gamma);
+        scoreText.text = o.gamma / 20;
+    });
 }
 function soapFloor() {
     var newSoap = soapBubbles.create(game.input.x, game.input.y, 'soapBubble');
