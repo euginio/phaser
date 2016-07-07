@@ -125,8 +125,9 @@ function update () {
       gyro.startTracking(function(o) {
            // updating player velocity
            //player.body.velocity.x += o.gamma/20;
-                   westZombies.setAll('body.velocity.x', o.gamma);
-                   eastZombies.setAll('body.velocity.x', o.gamma);
+           westZombies.setAll('body.velocity.x', o.gamma);
+           eastZombies.setAll('body.velocity.x', o.gamma);
+           //for use landscape use o.beta instead of o.gamma
     scoreText.text=o.gamma/20;
 
       });   
