@@ -25,5 +25,5 @@
     "permissions": {},
     "fullscreen": "true",
     "type": "web",
-    "orientation": "portrait"
+    "orientation": "landscape"
 }

@@ -1,0 +1,15 @@
+
+
+
+Zombie:
+    speed: px/s
+    eatSpeed: brain/s
+    fall: function ()
+    eatBrain:
+    direction: 0, 90, 180, 270
+
+brain:
+    explode
+
+bubble:
+    soap floor
