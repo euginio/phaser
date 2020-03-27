@@ -9,7 +9,7 @@ class Game extends Phaser.Game {
 }
 
 abstract class Zombie extends Phaser.Sprite {
-    private ZOMBIE_SPEED: number = 50;
+    private ZOMBIE_SPEED: number = 10;
     private eatSpeed: number;
     private direction: number;
 
@@ -142,7 +142,7 @@ class State extends Phaser.State {
     }
 
     update() {
-        if (this.game.time.now > this.newZombieTime && this.zombies.length < 2) {
+        if (this.game.time.now > this.newZombieTime && this.zombies.length < 1) {
             var newZombie: Zombie = Zombie.newRandomZombie(this.game);
             this.zombies.add(newZombie);
             this.newZombieTime = this.game.time.now + 1200;

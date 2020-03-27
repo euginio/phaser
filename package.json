@@ -5,7 +5,10 @@
     "author": "Your Name <you.name@example.org>",
     "dependencies": {},
     "devDependencies": {
-        "typescript": "^1.8.10",
-        "tslint": "^3.7.4"
+        "typescript": "~3.5.3",
+        "tslint": "~5.18.0"
+    },
+    "scripts": {
+        "serve": "python -m SimpleHTTPServer"
     }
 }

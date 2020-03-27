@@ -1,28 +1,37 @@
 /// <reference path="../tsDefinitions/phaser.comments.d.ts" />
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 // -------------------------------------------------------------------------
-var Game = (function (_super) {
+var Game = /** @class */ (function (_super) {
     __extends(Game, _super);
     function Game() {
         // init game
-        _super.call(this, 600, 300, Phaser.CANVAS, "content", State);
+        return _super.call(this, 600, 300, Phaser.CANVAS, "content", State) || this;
     }
     return Game;
 }(Phaser.Game));
-var Zombie = (function (_super) {
+var Zombie = /** @class */ (function (_super) {
     __extends(Zombie, _super);
     function Zombie(game, x, y, frameStartIndex, axis, axisModificator) {
-        _super.call(this, game, x, y, 'zombie');
-        this.ZOMBIE_SPEED = 50;
+        var _this = _super.call(this, game, x, y, 'zombie') || this;
+        _this.ZOMBIE_SPEED = 50;
         var fsi = frameStartIndex;
-        this.animations.add('eatBrain', [fsi, fsi + 1, fsi + 2]);
-        this.animations.add('walk', [fsi + 3, fsi + 4, fsi + 5]);
-        this.play('walk', 7, true);
-        this.events.onOutOfBounds.add(this.zombieOut, this);
+        _this.animations.add('eatBrain', [fsi, fsi + 1, fsi + 2]);
+        _this.animations.add('walk', [fsi + 3, fsi + 4, fsi + 5]);
+        _this.play('walk', 7, true);
+        _this.events.onOutOfBounds.add(_this.zombieOut, _this);
+        return _this;
     }
     Zombie.newRandomZombie = function (game) {
         var aDirection = Math.abs(Math.random() * 4 * 90);
@@ -44,10 +53,10 @@ var Zombie = (function (_super) {
     };
     return Zombie;
 }(Phaser.Sprite));
-var NorthZombie = (function (_super) {
+var NorthZombie = /** @class */ (function (_super) {
     __extends(NorthZombie, _super);
     function NorthZombie(game) {
-        _super.call(this, game, game.width / 2, 0, 1, 'y', '-');
+        return _super.call(this, game, game.width / 2, 0, 1, 'y', '-') || this;
     }
     NorthZombie.prototype.setBaseVelocity = function () {
         this.body.velocity.y = this.getZombieSpeed();
@@ -60,14 +69,15 @@ var NorthZombie = (function (_super) {
     return NorthZombie;
 }(Zombie));
 // -------------------------------------------------------------------------
-var State = (function (_super) {
+var State = /** @class */ (function (_super) {
     __extends(State, _super);
     function State() {
-        _super.apply(this, arguments);
-        this.score = 0;
-        this.scoreString = '';
-        this.newZombieTime = 0;
-        this.timeEating = -1;
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.score = 0;
+        _this.scoreString = '';
+        _this.newZombieTime = 0;
+        _this.timeEating = -1;
+        return _this;
     }
     State.prototype.preload = function () {
         this.game.stage.backgroundColor = '#85b5e1';
@@ -113,7 +123,7 @@ var State = (function (_super) {
         });
     };
     State.prototype.update = function () {
-        if (this.game.time.now > this.newZombieTime && this.zombies.length < 2) {
+        if (this.game.time.now > this.newZombieTime && this.zombies.length < 1) {
             var newZombie = Zombie.newRandomZombie(this.game);
             this.zombies.add(newZombie);
             this.newZombieTime = this.game.time.now + 1200;
@@ -128,6 +138,7 @@ var State = (function (_super) {
             }
             ;
             if (this.game.time.now > this.timeEating + 3000) {
+                //location.reload();
             }
         });
         if (this.game.input.activePointer.isDown) {
