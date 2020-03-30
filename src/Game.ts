@@ -4,12 +4,12 @@
 class Game extends Phaser.Game {
     constructor() {
         // init game
-        super(600, 300, Phaser.CANVAS, "content", State);
+        super(900, 1600, Phaser.CANVAS, "content", State);
     }
 }
 
 abstract class Zombie extends Phaser.Sprite {
-    private ZOMBIE_SPEED: number = 20;
+    private ZOMBIE_SPEED: number = 100;
     private eatSpeed: number;
     private direction: number;
 
@@ -53,7 +53,6 @@ abstract class Zombie extends Phaser.Sprite {
         this.game.state.scoreText.text = this.game.state.scoreString + this.game.state.score;
     }
 }
-var orient = 0;
 class NorthZombie extends Zombie {
 
     public constructor(game: Phaser.Game) {
@@ -64,10 +63,10 @@ class NorthZombie extends Zombie {
         this.body.velocity.y = this.getZombieSpeed();
     }
 
-    updateVelocity() {
+    updateVelocity(o:any) {
         // updating player velocity
         
-        this.body.velocity.y += -this.game.state.y;
+        this.body.velocity.y += o.y*10;	
         //for use landscape use o.beta instead of o.gamma
     }
 
@@ -86,8 +85,6 @@ class State extends Phaser.State {
 
     private newZombieTime: number = 0;
     private timeEating: number = -1;
-    private x=0;
-    private y=0;
 
     preload() {
         this.game.stage.backgroundColor = '#85b5e1';
@@ -95,9 +92,9 @@ class State extends Phaser.State {
         this.game.load.spritesheet('brain', 'resources/img/brain.png', 81, 61);
         this.game.load.spritesheet('soapBubble', 'resources/img/ball.png', 25, 25);
     }
-    render(){
-        this.game.debug.text(`Debugging Phaser ${JSON.stringify(orient)}`, 20, 20, 'yellow', 'Segoe UI');
-    }
+    // render(){
+    //     this.game.debug.text(`Debugging Phaser ${JSON.stringify(orient)}`, 20, 20, 'yellow', 'Segoe UI');
+    // }
     create() {
 
 
@@ -122,18 +119,7 @@ class State extends Phaser.State {
 
         this.game.input.onDown.add(this.goFullScreen, this);
          
-        var self=this;
-        window.addEventListener('devicemotion', function(event) {
-            console.log(event.acceleration.x + ' m/s2');
-            console.log(event.accelerationIncludingGravity.x + ' including gravity');
-
-            self.x = event.accelerationIncludingGravity.x;
-            self.y = event.accelerationIncludingGravity.y;
-    
-            self.zombies.callAll('updateVelocity', null);
-            self.scoreText.text = `x: ${self.x} ; y: ${self.y}`
-        });
-        
+        this.setupGyro();
     }
 
     goFullScreen() {
@@ -149,6 +135,17 @@ class State extends Phaser.State {
         this.game.scale.startFullScreen(false);
     }
 
+    setupGyro() {	
+        gyro.frequency = 500;	
+        // start gyroscope detection	
+        var zom = this.zombies;	
+        var scoretxt = this.scoreText;	
+        gyro.startTracking(function (o) {	
+            zom.callAll('updateVelocity', null, o);	
+            scoretxt.text = o.x + " " + o.y;	
+        });	
+    }
+
     update() {
         let gameTime = this.game.time.now;
         let self = this;
@@ -156,7 +153,7 @@ class State extends Phaser.State {
             var newZombie: Zombie = Zombie.newRandomZombie(this.game);
             this.zombies.add(newZombie);
             this.newZombieTime = gameTime + 1200;
-
+            this.zombies.callAll('setBaseVelocity', null);
         }
         this.game.physics.arcade.collide(this.zombies, this.brain, function (brain, zombie) {
             zombie.animations.stop('walk');
@@ -173,8 +170,6 @@ class State extends Phaser.State {
         if (this.game.input.activePointer.isDown) {
             this.soapFloor();
         }
-
-        this.zombies.callAll('setBaseVelocity', null);
 
         if (this.cursors.up.isDown) {
             // this.zombies.setAll('body.velocity.x', -(this.ZOMBIE_SPEED - 35));

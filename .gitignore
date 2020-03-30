@@ -9,3 +9,7 @@ ehthumbs.db
 Thumbs.db
 
 node_modules/
+src/Game-devicemotionrefactor.js
+src/Game-devicemotionrefactor.js.map
+src/Game.js
+src/Game.js.map
