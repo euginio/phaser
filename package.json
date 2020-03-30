@@ -5,7 +5,6 @@
     "author": "Your Name <you.name@example.org>",
     "dependencies": {},
     "devDependencies": {
-        "typescript": "~3.5.3",
         "tslint": "~5.18.0"
     },
     "scripts": {

@@ -25,11 +25,11 @@ var Zombie = /** @class */ (function (_super) {
     __extends(Zombie, _super);
     function Zombie(game, x, y, frameStartIndex, axis, axisModificator) {
         var _this = _super.call(this, game, x, y, 'zombie') || this;
-        _this.ZOMBIE_SPEED = 50;
+        _this.ZOMBIE_SPEED = 20;
         var fsi = frameStartIndex;
-        _this.animations.add('eatBrain', [fsi, fsi + 1, fsi + 2]);
-        _this.animations.add('walk', [fsi + 3, fsi + 4, fsi + 5]);
-        _this.play('walk', 7, true);
+        _this.animations.add('eatBrain', [0, 12, 1, 13]);
+        _this.animations.add('walk', [0, 6, 12, 1, 7, 13]);
+        _this.play('walk', 5, true);
         _this.events.onOutOfBounds.add(_this.zombieOut, _this);
         return _this;
     }
@@ -44,6 +44,9 @@ var Zombie = /** @class */ (function (_super) {
     };
     Zombie.prototype.getZombieSpeed = function () {
         return this.ZOMBIE_SPEED;
+    };
+    Zombie.prototype.slowDown = function () {
+        this.body.velocity.y = -this.getZombieSpeed();
     };
     Zombie.prototype.eatBrain = function () {
     };
@@ -83,12 +86,12 @@ var State = /** @class */ (function (_super) {
         this.game.stage.backgroundColor = '#85b5e1';
         this.game.load.spritesheet('zombie', 'resources/img/zombie_sheet.png', 46, 49);
         this.game.load.spritesheet('brain', 'resources/img/brain.png', 81, 61);
-        this.game.load.spritesheet('soapBubble', 'resources/img/soap-bubbles.jpg', 25, 25);
+        this.game.load.spritesheet('soapBubble', 'resources/img/ball.jpg', 25, 25);
     };
     State.prototype.create = function () {
         this.brain = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'brain');
         this.game.physics.arcade.enable(this.brain);
-        this.brain.animations.add('aeten');
+        this.brain.animations.add('aeten', null, 4, false);
         this.brain.body.immovable = true;
         this.soapBubbles = this.game.add.group();
         this.soapBubbles.enableBody = true;
@@ -123,37 +126,43 @@ var State = /** @class */ (function (_super) {
         });
     };
     State.prototype.update = function () {
-        if (this.game.time.now > this.newZombieTime && this.zombies.length < 1) {
+        var gameTime = this.game.time.now;
+        var self = this;
+        if (gameTime > this.newZombieTime && this.zombies.length < 1) {
             var newZombie = Zombie.newRandomZombie(this.game);
             this.zombies.add(newZombie);
-            this.newZombieTime = this.game.time.now + 1200;
+            this.newZombieTime = gameTime + 1200;
         }
         this.game.physics.arcade.collide(this.zombies, this.brain, function (brain, zombie) {
             zombie.animations.stop('walk');
-            zombie.animations.play('eatBrain');
-            brain.play('aeten', 7, true);
+            zombie.animations.play('eatBrain', 7);
+            brain.play('aeten', 3, false, true);
             //change this logic for one where brain has live points
-            if (this.timeEating == -1) {
-                this.timeEating = this.game.time.now;
+            if (self.timeEating == -1) {
+                self.timeEating = gameTime;
             }
             ;
-            if (this.game.time.now > this.timeEating + 3000) {
-                //location.reload();
+            if (gameTime > self.timeEating + 3000) {
+                location.reload();
             }
         });
         if (this.game.input.activePointer.isDown) {
             this.soapFloor();
         }
         this.zombies.callAll('setBaseVelocity', null);
-        /*        if (this.cursors.left.isDown) {
-                    this.zombies.setAll('body.velocity.x', -(this.ZOMBIE_SPEED - 35));
-                    // this.zombies.setAll('body.velocity.x',-(ZOMBIE_SPEED-35));
-                }
-        
-                if (this.cursors.right.isDown) {
-                    // this.zombies.setAll('body.velocity.x', ZOMBIE_SPEED);
-                    this.zombies.setAll('body.velocity.x', this.ZOMBIE_SPEED - 35);
-                }*/
+        if (this.cursors.up.isDown) {
+            // this.zombies.setAll('body.velocity.x', -(this.ZOMBIE_SPEED - 35));
+            this.zombies.callAll('slowDown', null);
+            // this.zombies.setAll('body.velocity.x',-(ZOMBIE_SPEED-35));
+        }
+        if (this.cursors.left.isDown) {
+            this.zombies.setAll('body.velocity.x', -(this.ZOMBIE_SPEED - 35));
+            // this.zombies.setAll('body.velocity.x',-(ZOMBIE_SPEED-35));
+        }
+        if (this.cursors.right.isDown) {
+            // this.zombies.setAll('body.velocity.x', ZOMBIE_SPEED);
+            this.zombies.setAll('body.velocity.x', this.ZOMBIE_SPEED - 35);
+        }
     };
     State.prototype.soapFloor = function () {
         var newSoap = this.soapBubbles.create(this.game.input.x, this.game.input.y, 'soapBubble');

@@ -3,7 +3,6 @@
     "name": "Soapy Zombies",
     "description": "Description!",
     "launch_path": "/index.html",
-    "appcache_path": "/offline.appcache",
     "icons": {
         "16": "/icons/icon16.png",
         "30": "/icons/icon30.png",

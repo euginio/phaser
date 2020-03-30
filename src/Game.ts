@@ -9,7 +9,7 @@ class Game extends Phaser.Game {
 }
 
 abstract class Zombie extends Phaser.Sprite {
-    private ZOMBIE_SPEED: number = 10;
+    private ZOMBIE_SPEED: number = 20;
     private eatSpeed: number;
     private direction: number;
 
@@ -19,9 +19,9 @@ abstract class Zombie extends Phaser.Sprite {
         super(game, x, y, 'zombie');
 
         var fsi = frameStartIndex;
-        this.animations.add('eatBrain', [fsi, fsi + 1, fsi + 2]);
-        this.animations.add('walk', [fsi + 3, fsi + 4, fsi + 5]);
-        this.play('walk', 7, true);
+        this.animations.add('eatBrain', [0,12,1,13]);
+        this.animations.add('walk', [0, 6, 12, 1, 7, 13]);
+        this.play('walk', 5, true);
 
         this.events.onOutOfBounds.add(this.zombieOut, this);
     }
@@ -38,6 +38,10 @@ abstract class Zombie extends Phaser.Sprite {
 
     getZombieSpeed() {
         return this.ZOMBIE_SPEED;
+    }
+
+    slowDown() {
+        this.body.velocity.y = -this.getZombieSpeed();
     }
 
     eatBrain() {
@@ -62,6 +66,7 @@ class NorthZombie extends Zombie {
 
     updateVelocity(o: any) {
         // updating player velocity
+        
         this.body.velocity.y += -o.gamma;
         //for use landscape use o.beta instead of o.gamma
     }
@@ -82,12 +87,11 @@ class State extends Phaser.State {
     private newZombieTime: number = 0;
     private timeEating: number = -1;
 
-
     preload() {
         this.game.stage.backgroundColor = '#85b5e1';
         this.game.load.spritesheet('zombie', 'resources/img/zombie_sheet.png', 46, 49)
         this.game.load.spritesheet('brain', 'resources/img/brain.png', 81, 61);
-        this.game.load.spritesheet('soapBubble', 'resources/img/soap-bubbles.jpg', 25, 25);
+        this.game.load.spritesheet('soapBubble', 'resources/img/ball.jpg', 25, 25);
     }
 
     create() {
@@ -95,7 +99,7 @@ class State extends Phaser.State {
 
         this.brain = this.game.add.sprite(this.game.width / 2, this.game.height / 2, 'brain');
         this.game.physics.arcade.enable(this.brain);
-        this.brain.animations.add('aeten');
+        this.brain.animations.add('aeten', null, 4, false);
         this.brain.body.immovable = true;
 
         this.soapBubbles = this.game.add.group();
@@ -142,21 +146,23 @@ class State extends Phaser.State {
     }
 
     update() {
-        if (this.game.time.now > this.newZombieTime && this.zombies.length < 1) {
+        let gameTime = this.game.time.now;
+        let self = this;
+        if (gameTime > this.newZombieTime && this.zombies.length < 1) {
             var newZombie: Zombie = Zombie.newRandomZombie(this.game);
             this.zombies.add(newZombie);
-            this.newZombieTime = this.game.time.now + 1200;
+            this.newZombieTime = gameTime + 1200;
 
         }
         this.game.physics.arcade.collide(this.zombies, this.brain, function (brain, zombie) {
             zombie.animations.stop('walk');
-            zombie.animations.play('eatBrain');
-            brain.play('aeten', 7, true);
+            zombie.animations.play('eatBrain', 7);
+            brain.play('aeten', 3, false, true);
 
             //change this logic for one where brain has live points
-            if (this.timeEating == -1) { this.timeEating = this.game.time.now };
-            if (this.game.time.now > this.timeEating + 3000) {
-                //location.reload();
+            if (self.timeEating == -1) { self.timeEating = gameTime };
+            if (gameTime > self.timeEating + 3000) {
+                location.reload();
             }
         });
 
@@ -166,15 +172,21 @@ class State extends Phaser.State {
 
         this.zombies.callAll('setBaseVelocity', null);
 
-        /*        if (this.cursors.left.isDown) {
-                    this.zombies.setAll('body.velocity.x', -(this.ZOMBIE_SPEED - 35));
-                    // this.zombies.setAll('body.velocity.x',-(ZOMBIE_SPEED-35));
-                }
-        
-                if (this.cursors.right.isDown) {
-                    // this.zombies.setAll('body.velocity.x', ZOMBIE_SPEED);
-                    this.zombies.setAll('body.velocity.x', this.ZOMBIE_SPEED - 35);
-                }*/
+        if (this.cursors.up.isDown) {
+            // this.zombies.setAll('body.velocity.x', -(this.ZOMBIE_SPEED - 35));
+            this.zombies.callAll('slowDown', null);
+            // this.zombies.setAll('body.velocity.x',-(ZOMBIE_SPEED-35));
+        }
+
+        if (this.cursors.left.isDown) {
+            this.zombies.setAll('body.velocity.x', -(this.ZOMBIE_SPEED - 35));
+            // this.zombies.setAll('body.velocity.x',-(ZOMBIE_SPEED-35));
+        }
+
+        if (this.cursors.right.isDown) {
+            // this.zombies.setAll('body.velocity.x', ZOMBIE_SPEED);
+            this.zombies.setAll('body.velocity.x', this.ZOMBIE_SPEED - 35);
+        }
     }
 
     soapFloor() {
