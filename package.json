@@ -8,6 +8,7 @@
         "tslint": "~5.18.0"
     },
     "scripts": {
-        "serve": "python -m SimpleHTTPServer"
+        "serve": "http-server -S",
+        "debug-dev":"sudo adb forward tcp:9222 localabstract:chrome_devtools_remote; google-chrome localhost:9222"
     }
 }
